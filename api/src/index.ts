@@ -27,7 +27,10 @@ app.use(async (c, next) => {
 app.use(logger());
 
 app.use('*', clerkMiddleware())
-app.get('/', (c) => {
+
+app.get('/', async (c) => {
+  const clerkClient = c.get('clerk')
+
   const auth = getAuth(c)
 
   if (!auth?.userId) {
@@ -36,11 +39,18 @@ app.get('/', (c) => {
     })
   }
 
-  return c.json({
-    message: 'You are logged in!',
-    userId: auth.userId,
-  })
-})
+  try {
+    const user = await clerkClient.users.getUser('user_id_....')
 
+    return c.json({
+      user,
+    })
+  } catch (e) {
+    console.error(e);
+    return c.json({
+      message: 'User not found.'
+    }, 404)
+  }
+})
 
 export default app
