@@ -1,8 +1,10 @@
 import { Hono } from 'hono'
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth'
 import { Mizu, logger } from "./mizu";
+import { neon } from '@neondatabase/serverless';
 
 type Bindings = {
+  DATABASE_URL: string;
   MIZU_ENDPOINT: string;
 };
 
@@ -28,6 +30,18 @@ app.use(logger());
 
 app.use('*', clerkMiddleware())
 
+app.get('/no-db', async (c) => {
+  const sql = neon(process.env.DATABASE_URL ?? "");
+
+  return c.json({
+    message: 'Hello, world!',
+  })
+});
+
+app.get('/api/users', async (c) => {
+  const sql = neon(c.env.DATABASE_URL);
+});
+
 app.get('/', async (c) => {
   const clerkClient = c.get('clerk')
 
@@ -40,7 +54,7 @@ app.get('/', async (c) => {
   }
 
   try {
-    const user = await clerkClient.users.getUser('user_id_....')
+    const user = await clerkClient.users.getUser(auth.userId)
 
     return c.json({
       user,
