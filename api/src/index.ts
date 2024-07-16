@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
-import { logger, Mizu } from "./mizu.ts";
+// import { logger, Mizu } from "./mizu.ts";
 import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
 import { neon } from "@neondatabase/serverless";
 
@@ -14,22 +14,22 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 // Mizu Tracing Middleware - Must be called first!
-app.use(async (c, next) => {
-  const config = { MIZU_ENDPOINT: env.MIZU_ENDPOINT };
-  const ctx = c.executionCtx;
+// app.use(async (c, next) => {
+//   const config = { MIZU_ENDPOINT: env.MIZU_ENDPOINT };
+//   const ctx = c.executionCtx;
 
-  const teardown = Mizu.init(
-    config,
-    ctx,
-  );
+//   const teardown = Mizu.init(
+//     config,
+//     ctx,
+//   );
 
-  await next();
+//   await next();
 
-  teardown();
-});
+//   teardown();
+// });
 
 // Mizu request logging
-app.use(logger());
+// app.use(logger());
 
 app.use("*", clerkMiddleware());
 
