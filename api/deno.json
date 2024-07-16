@@ -1,0 +1,12 @@
+{
+    "imports": {
+        "hono": "jsr:@hono/hono",
+        "@clerk/backend": "npm:@clerk/backend",
+        "@hono/clerk-auth": "npm:@hono/clerk-auth",
+        "@neondatabase/serverless": "npm:@neondatabase/serverless",
+        "drizzle-orm": "npm:drizzle-orm",
+        "dotenv": "npm:dotenv",
+        "drizzle-kit": "npm:drizzle-kit",
+        "postgres": "npm:postgres"
+    }
+}
