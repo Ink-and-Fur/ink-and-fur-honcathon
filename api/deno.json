@@ -5,8 +5,9 @@
         "@hono/clerk-auth": "npm:@hono/clerk-auth",
         "@neondatabase/serverless": "npm:@neondatabase/serverless",
         "drizzle-orm": "npm:drizzle-orm",
+        "drizzle-orm/postgres-js": "npm:drizzle-orm/postgres-js",
         "dotenv": "npm:dotenv",
         "drizzle-kit": "npm:drizzle-kit",
-        "postgres": "npm:postgres"
+        "postgres": "https://deno.land/x/postgresjs@3.4.4/mod.js"
     }
 }
