@@ -6,8 +6,14 @@
         "@neondatabase/serverless": "npm:@neondatabase/serverless",
         "drizzle-orm": "npm:drizzle-orm",
         "drizzle-orm/postgres-js": "npm:drizzle-orm/postgres-js",
-        "dotenv": "npm:dotenv",
         "drizzle-kit": "npm:drizzle-kit",
-        "postgres": "https://deno.land/x/postgresjs@3.4.4/mod.js"
+        "postgres": "https://deno.land/x/postgresjs@v3.4.4/mod.js",
+        "env": "https://deno.land/std@0.224.0/dotenv/mod.ts"
+    },
+    "tasks": {
+        "start": "deno run --allow-env --allow-net --allow-read src/index.deno.ts",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "deno run migrate.ts",
+        "db:seed": "deno run seed.ts"
     }
 }

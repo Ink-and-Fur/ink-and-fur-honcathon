@@ -1,3 +1,6 @@
 ```
-deno run --allow-env --allow-net src/index.deno.ts
+deno task start
+deno task db:migrate
+deno task db:generate
+deno task db:seed
 ```

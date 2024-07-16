@@ -1,8 +1,5 @@
-import { Hono } from "hono";
-import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
+import { clerkMiddleware, getAuth, Hono, load, neon } from "./deps.ts";
 // import { logger, Mizu } from "./mizu.ts";
-import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
-import { neon } from "@neondatabase/serverless";
 
 const env = await load();
 
@@ -31,7 +28,13 @@ const app = new Hono<{ Bindings: Bindings }>();
 // Mizu request logging
 // app.use(logger());
 
-app.use("*", clerkMiddleware());
+app.use(
+  "*",
+  clerkMiddleware({
+    secretKey: env.CLERK_SECRET_KEY,
+    publishableKey: env.CLERK_PUBLISHABLE_KEY,
+  }),
+);
 
 app.get("/no-db", async (c) => {
   const sql = neon(env.DATABASE_URL ?? "");
@@ -50,8 +53,7 @@ app.get("/api/users", async (c) => {
 });
 
 app.get("/", async (c) => {
-  c.get;
-  const clerkClient = c.get("clerk" as never) as any;
+  const clerkClient = c.get("clerk");
 
   const auth = getAuth(c);
 
