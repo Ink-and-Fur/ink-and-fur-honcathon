@@ -1,7 +1,9 @@
 name: deploy
 
 on:
-  push:
+  push: 
+    branches:
+      - main
 
 env:
   IMAGE_NAME: ${{ github.repository }}
