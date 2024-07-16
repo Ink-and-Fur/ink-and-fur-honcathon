@@ -1,21 +1,22 @@
 import { config } from 'dotenv';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import postgres from 'postgres';
 import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'https://deno.land/x/postgresjs@3.4.4/mod.js';
+import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
 
-config({ path: '.dev.vars' });
+const env = await load();
 
-const databaseUrl = drizzle(postgres(`${process.env.DATABASE_URL}`,
+const databaseUrl = drizzle(postgres(env.DATABASE_URL,
   { ssl: 'require', max: 1 }));
 
 const main = async () => {
   try {
     await migrate(databaseUrl, { migrationsFolder: 'drizzle' });
     console.log('Migration complete');
-    process.exit(0);
+    Deno.exit(0);
   } catch (error) {
     console.error(error);
-    process.exit(1);
+    Deno.exit(1);
   }
 };
 
