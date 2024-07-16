@@ -40,6 +40,10 @@ app.get('/no-db', async (c) => {
 
 app.get('/api/users', async (c) => {
   const sql = neon(c.env.DATABASE_URL);
+  const users = await sql`select * from users`;
+  return c.json({
+    users,
+  })
 });
 
 app.get('/', async (c) => {
