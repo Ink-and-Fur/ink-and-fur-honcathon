@@ -6,6 +6,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
 
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -47,7 +48,7 @@ jobs:
         uses: northflank/deploy-to-northflank@v1
         with:
           northflank-api-key: ${{ secrets.NORTHFLANK_API_KEY }}
-          project-id: ${{ env.PROJECT_ID }}
-          service-id: ${{ env.SERVICE_ID }}
+          project-id: ${{ vars.PROJECT_ID }}
+          service-id: ${{ vars.SERVICE_ID }}
           image-path: ${{ steps.meta.outputs.tags }}
-          credentials-id: ${{ env.CREDENTIALS_ID }}
+          credentials-id: ${{ vars.CREDENTIALS_ID }}
