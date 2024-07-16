@@ -1,8 +1,7 @@
-import { config } from 'dotenv';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'https://deno.land/x/postgresjs@3.4.4/mod.js';
-import { load } from "https://deno.land/std@0.224.0/dotenv/mod.ts";
+import postgres from 'postgres';
+import { load } from "env";
 
 const env = await load();
 

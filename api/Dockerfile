@@ -4,8 +4,13 @@ EXPOSE 8000
 
 WORKDIR /app
 
-ADD . /app
+ADD deno.json .
+ADD deno.lock .
+ADD src/deps.ts src/deps.ts
 
-RUN deno cache src/index.deno.ts
 
-CMD ["run", "--allow-net", "--allow-env", "--allow-read", "src/index.deno.ts"]
+RUN deno cache --lock=deno.lock src/deps.ts
+
+ADD . .
+
+CMD ["task", "start"]
