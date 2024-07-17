@@ -16,20 +16,6 @@ export default function RootLayout() {
       routerReplace={(to) => navigate(to, { replace: true })}
       publishableKey={PUBLISHABLE_KEY}
     >
-      {/* <header className="header">
-        <div>
-          <SignedIn>
-            <UserButton afterSignOutUrl='/login' />
-          </SignedIn>
-          <SignedOut>
-            <Link to="/sign-in">Sign In</Link>
-          </SignedOut>
-        </div>
-      </header>
-      <main>
-        <Outlet />
-      </main> */}
-
       <Outlet />
     </ClerkProvider>
   )
