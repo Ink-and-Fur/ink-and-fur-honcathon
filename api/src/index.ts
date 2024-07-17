@@ -1,24 +1,38 @@
-import { clerkMiddleware, getAuth, Hono, load, neon, drizzle, eq, and } from "./deps.ts";
+import {
+  and,
+  clerkMiddleware,
+  drizzle,
+  eq,
+  getAuth,
+  Hono,
+  load,
+  neon,
+} from "./deps.ts";
 // import { logger, Mizu } from "./mizu.ts";
 import * as AWS from "s3";
-import {jobs} from "./db/schema.ts";
-import {PREDICTION_FAILED, PREDICTION_STARTING, PREDICTION_SUCCEEDED, trainLora} from "./replicate.ts";
+import { jobs } from "./db/schema.ts";
+import {
+  PREDICTION_FAILED,
+  PREDICTION_STARTING,
+  PREDICTION_SUCCEEDED,
+  trainLora,
+} from "./replicate.ts";
 
 const env = await load();
 
 const client = new AWS.S3({
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
   },
-  region: "eu-central-1"
+  region: "eu-central-1",
 });
 
 type Bindings = {
   DATABASE_URL: string;
   MIZU_ENDPOINT: string;
   AWS_S3_BUCKET: string;
-  BASE_URL: string,
+  BASE_URL: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -61,13 +75,13 @@ app.get("/s3", async (c) => {
   const data = await client.putObject({
     Bucket: env.AWS_S3_BUCKET,
     Key: "meow2.txt",
-    Body: "hello"
+    Body: "hello",
   });
 
   console.log(data);
 
-  return c.text('Hello Hono!')
-})
+  return c.text("Hello Hono!");
+});
 
 app.get("/api/users", async (c) => {
   const sql = neon(env.DATABASE_URL);
@@ -86,7 +100,7 @@ app.get("/api/jobs", async (c) => {
   const allJobs = await db.select().from(jobs).where(eq(jobs.user, userId));
 
   return c.json({
-    jobs: allJobs
+    jobs: allJobs,
   });
 });
 
@@ -107,20 +121,20 @@ app.post("/api/jobs", async (c) => {
     c.status(400);
     return c.json({
       error: "invalid_name",
-      description: "the pet name cannot contain a slash"
+      description: "the pet name cannot contain a slash",
     });
   }
 
   const result = await db.select().from(jobs).where(and(
-      eq(jobs.user, userId),
-      eq(jobs.name, name),
+    eq(jobs.user, userId),
+    eq(jobs.name, name),
   )).limit(1);
 
   if (result.length !== 0) {
     c.status(400);
     return c.json({
       error: "already_exists",
-      description: "a pet with this name already exists for the current user"
+      description: "a pet with this name already exists for the current user",
     });
   }
 
@@ -129,33 +143,38 @@ app.post("/api/jobs", async (c) => {
   await client.putObject({
     Bucket: env.AWS_S3_BUCKET,
     Key: fileName,
-    Body: file
+    Body: file,
   });
 
-  const url = `https://${env.AWS_S3_BUCKET}.s3.eu-central-1.amazonaws.com/${fileName}`;
+  const url =
+    `https://${env.AWS_S3_BUCKET}.s3.eu-central-1.amazonaws.com/${fileName}`;
 
   const createJobResult = await db.insert(jobs).values({
     user: userId,
     name: name,
-    images: url
+    images: url,
   }).returning();
 
   // now that all the stuff has been successfully uploaded and inserted into our db
   // it is time to start the job
-  const callbackUrl = `${env.BASE_URL}/api/jobs/${userId}/${name}/callback`
+  const callbackUrl = `${env.BASE_URL}/api/jobs/${userId}/${name}/callback`;
 
   // todo: test if this actually works
   const { data, error } = await trainLora({
     inputImages: url,
     webhook: callbackUrl,
-    webhookEventsFilter: [PREDICTION_STARTING, PREDICTION_SUCCEEDED, PREDICTION_FAILED],
+    webhookEventsFilter: [
+      PREDICTION_STARTING,
+      PREDICTION_SUCCEEDED,
+      PREDICTION_FAILED,
+    ],
   });
 
   if (error !== null) {
     c.status(502);
     return c.json({
       error: "train_lora_failed",
-      description: error.toString()
+      description: error.toString(),
     });
   }
 
@@ -163,7 +182,33 @@ app.post("/api/jobs", async (c) => {
 
   return c.json({
     success: true,
-    job: createJobResult?.[0]
+    job: createJobResult?.[0],
+  });
+});
+
+app.get("/api/jobs/:name", async (c) => {
+  const db = drizzle(neon(env.DATABASE_URL));
+
+  // todo replace this with actual auth later down the road
+  let userId = 10;
+
+  const { name } = c.req.param;
+
+  const result = await db.select().from(jobs).where(and(
+    eq(jobs.user, userId),
+    eq(jobs.name, name),
+  )).limit(1);
+
+  if (result.length === 0) {
+    c.status(404);
+    return c.json({
+      error: "not_found",
+      description: "the pet does not exist",
+    });
+  }
+
+  return c.json({
+    job: result[0],
   });
 });
 

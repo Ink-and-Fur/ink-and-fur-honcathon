@@ -13,6 +13,19 @@ export function useGetPets() {
   return query;
 }
 
+function getPet(name: string) {
+  return fetch(`/api/jobs/${name}`).then((r) => r.json());
+}
+
+export function useGetPet(name: string) {
+  const query = useQuery({
+    queryKey: ["pets", name],
+    queryFn: () => getPet(name),
+  });
+
+  return query;
+}
+
 // TODO - Add zip file...
 function createPet({ name, zip }: { name: string; zip: Blob }) {
   const formData = new FormData();

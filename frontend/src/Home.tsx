@@ -27,6 +27,7 @@ import { LoggedInLayout } from "./LoggedInLayout.tsx"
 import { usePetForm } from "./PetForm/form.tsx";
 import { Form, FormField } from "./components/ui/form.tsx";
 import { useGetPets } from "./queries/index.ts"
+import { useNavigate } from "react-router-dom"
 
 export function SkeletonLoading() {
   return (
@@ -63,6 +64,7 @@ export default function HomeLayout() {
 export function Home() {
   const { data: pets, isPending } = useGetPets();
   const { form, onSubmit, images, handleImageUpload, handleRemoveImage } = usePetForm()
+  const navigate = useNavigate();
 
   return (
     <div
@@ -79,7 +81,11 @@ export function Home() {
           </TableHeader>
           <TableBody>
             {pets.jobs.map((pet: { id: number, name: string }) => (
-              <TableRow key={pet.id}>
+              <TableRow key={pet.name} onClick={
+                () => {
+                  navigate(`/pet/${pet.name}`)
+                }
+              }>
                 <TableCell>{pet.name}</TableCell>
                 <TableCell>
                   {/* Add any action buttons or links here */}
