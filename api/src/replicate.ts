@@ -1,36 +1,32 @@
 // TODO - Update client, this is an older version
 import Replicate from 'https://esm.sh/replicate@0.18.0'
+import {load} from "./deps.ts";
 
-const REPLICATE_API_TOKEN = Deno.env.get('REPLICATE_API_TOKEN')
+const env = await load();
 
 // === Replicate prediction statuses === //
 //
 // starting: the prediction is starting up. If this status lasts longer than a few seconds, then it's typically because a new worker is being started to run the prediction.
 export enum WebhookPredictionStatus {
-  STARTING = 'starting',
-  PROCESSING = 'processing',
-  SUCCEEDED = 'succeeded',
-  FAILED = 'failed',
-  /**
-   * Only called if user cancels a job from the replicate UI,
-   * so in practice we will not need this,
-   * unless we support canceling jobs in our own UI?
-   */
-  CANCELED = 'canceled'
+  // webhook_events_filter.0 must be one of the following: \\\"start\\\", \\\"output\\\", \\\"logs\\\", \\\"completed\\\"
+
+  START = 'start',
+  OUTPUT = 'output',
+  LOGS = 'logs',
+  COMPLETED = 'completed',
 }
 
 // Export constants
-export const PREDICTION_STARTING = WebhookPredictionStatus.STARTING;
-export const PREDICTION_PROCESSING = WebhookPredictionStatus.PROCESSING;
-export const PREDICTION_SUCCEEDED = WebhookPredictionStatus.SUCCEEDED;
-export const PREDICTION_FAILED = WebhookPredictionStatus.FAILED;
-export const PREDICTION_CANCELED = WebhookPredictionStatus.CANCELED;
+export const PREDICTION_START = WebhookPredictionStatus.START;
+export const PREDICTION_OUTPUT = WebhookPredictionStatus.OUTPUT;
+export const PREDICTION_COMPLETED = WebhookPredictionStatus.COMPLETED;
+export const PREDICTION_LOGS = WebhookPredictionStatus.LOGS;
 
 type WebhookEvent = keyof typeof WebhookPredictionStatus
 
 // @ts-ignore - there is a type bug in the Replicate export
 export const replicate = new Replicate({
-  auth: REPLICATE_API_TOKEN,
+  auth: env.REPLICATE_API_TOKEN,
 })
 
 type TrainLoraInput = {
@@ -96,7 +92,7 @@ export async function trainLora({ inputImages, webhook, webhookEventsFilter }: T
  * Only valid for 1 hour before Replicate deletes it!
  */
 type UrlToWeights = string;
-type TrainLoraWebhookSuccessPayload = { status: WebhookPredictionStatus.SUCCEEDED, output: UrlToWeights }
+type TrainLoraWebhookSuccessPayload = { status: WebhookPredictionStatus.COMPLETED, output: UrlToWeights }
 export const handleTrainLoraWebhookSuccess = (webhookPayload: TrainLoraWebhookSuccessPayload) => {
   // TODO - Stream weights file to S3 asynchronously
   //        (do not block the webhook handler from returning while downloading the file, or you'll get lots of replays)
@@ -176,8 +172,61 @@ export async function createImageWithLoraWeights(
 
 type ImageUrl = string;
 type CreateImageWebhookSuccessOutput = Array<ImageUrl>;
-type CreateImageWebhookSuccessPayload = { status: WebhookPredictionStatus.SUCCEEDED, output: CreateImageWebhookSuccessOutput }
+type CreateImageWebhookSuccessPayload = { status: WebhookPredictionStatus.COMPLETED, output: CreateImageWebhookSuccessOutput }
 export const handleCreateImageWithLoraWeightsWebhookSuccess = (webhookPayload: CreateImageWebhookSuccessPayload) => {
   // TODO - Upload image files to S3 asynchronously
   //        (do not block the webhook handler from returning while uploading the files, or you'll get lots of replays)
 }
+
+/*
+LOGS
+
+{
+  created_at: "2024-07-17T13:29:51.219Z",
+  data_removed: false,
+  error: null,
+  id: "7x89a8mdedrgp0cgr3hahpf2vw",
+  input: {
+    input_images: "https://ink-and-fur-dev-eu.s3.eu-central-1.amazonaws.com/images_10_dog5.zip"
+  },
+  logs: "['./temp_in/20240514_123647.jpg', './temp_in/20240514_123706.jpg', './temp_in/20240514_124533.jpg', "... 167031 more characters,
+  model: "zylim0702/sdxl-lora-customize-training",
+  output: null,
+  started_at: "2024-07-17T13:31:48.535688073Z",
+  status: "processing",
+  urls: {
+    cancel: "https://api.replicate.com/v1/predictions/7x89a8mdedrgp0cgr3hahpf2vw/cancel",
+    get: "https://api.replicate.com/v1/predictions/7x89a8mdedrgp0cgr3hahpf2vw"
+  },
+  version: "2ea90da29b19984472a0bbad4ecb39abe4b91fa0d6a5e8dc59988022149dee55",
+  webhook: "https://tiny-bears-give.loca.lt/api/jobs/10/dog5/callback",
+  webhook_events_filter: [ "start", "logs", "completed" ]
+}
+
+COMPLETE
+{
+  completed_at: "2024-07-17T13:39:05.570313299Z",
+  created_at: "2024-07-17T13:29:51.219Z",
+  data_removed: false,
+  error: null,
+  id: "7x89a8mdedrgp0cgr3hahpf2vw",
+  input: {
+    input_images: "https://ink-and-fur-dev-eu.s3.eu-central-1.amazonaws.com/images_10_dog5.zip"
+  },
+  logs: "['./temp_in/20240514_123647.jpg', './temp_in/20240514_123706.jpg', './temp_in/20240514_124533.jpg', "... 167286 more characters,
+  metrics: { predict_time: 437.034625226 },
+  model: "zylim0702/sdxl-lora-customize-training",
+  output: "https://replicate.delivery/pbxt/BeDJZKzegzj9fJ3T1a3mNfiYx4wkWQJKYrYErMD555bX3eKZC/trained_model.tar",
+  started_at: "2024-07-17T13:31:48.535688073Z",
+  status: "succeeded",
+  urls: {
+    cancel: "https://api.replicate.com/v1/predictions/7x89a8mdedrgp0cgr3hahpf2vw/cancel",
+    get: "https://api.replicate.com/v1/predictions/7x89a8mdedrgp0cgr3hahpf2vw"
+  },
+  version: "2ea90da29b19984472a0bbad4ecb39abe4b91fa0d6a5e8dc59988022149dee55",
+  webhook: "https://tiny-bears-give.loca.lt/api/jobs/10/dog5/callback",
+  webhook_events_filter: [ "start", "logs", "completed" ]
+}
+
+
+ */

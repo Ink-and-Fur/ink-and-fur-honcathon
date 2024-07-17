@@ -10,12 +10,12 @@ import {
 } from "./deps.ts";
 // import { logger, Mizu } from "./mizu.ts";
 import * as AWS from "s3";
-import { jobs } from "./db/schema.ts";
+import {jobs} from "./db/schema.ts";
 import {
-  PREDICTION_FAILED,
-  PREDICTION_STARTING,
-  PREDICTION_SUCCEEDED,
-  trainLora,
+  PREDICTION_OUTPUT,
+  PREDICTION_START,
+  PREDICTION_COMPLETED,
+  trainLora
 } from "./replicate.ts";
 
 const env = await load();
@@ -159,18 +159,15 @@ app.post("/api/jobs", async (c) => {
   // it is time to start the job
   const callbackUrl = `${env.BASE_URL}/api/jobs/${userId}/${name}/callback`;
 
-  // todo: test if this actually works
   const { data, error } = await trainLora({
     inputImages: url,
     webhook: callbackUrl,
-    webhookEventsFilter: [
-      PREDICTION_STARTING,
-      PREDICTION_SUCCEEDED,
-      PREDICTION_FAILED,
-    ],
+    webhookEventsFilter: [PREDICTION_START, PREDICTION_OUTPUT, PREDICTION_COMPLETED],
   });
 
   if (error !== null) {
+    console.error(error);
+
     c.status(502);
     return c.json({
       error: "train_lora_failed",
@@ -178,7 +175,15 @@ app.post("/api/jobs", async (c) => {
     });
   }
 
-  console.log(data);
+  await db.update(jobs).set({
+    last_update: data.status,
+    updates: [data],
+  }).where(and(
+      eq(jobs.user, userId),
+      eq(jobs.name, name),
+  ));
+
+  console.log("started job", data.id, ", set status in db to", data.status);
 
   return c.json({
     success: true,
@@ -208,6 +213,80 @@ app.get("/api/jobs/:name", async (c) => {
   }
 
   return c.json(result[0]);
+});
+
+app.post("/api/jobs/:userId/:name/callback", async (c) => {
+  const { userId, name } = c.req.param();
+
+  const body = await c.req.json();
+
+  console.log(body);
+
+  // put our code into a separate thingy so it doesnt immediately execute, allowing us to return early
+  // and not make replicate wait (as it'll resend it very often if we dont respond fast)
+  setTimeout(async () => {
+    const db = drizzle(neon(env.DATABASE_URL));
+
+    const result = await db.select().from(jobs).where(and(
+        eq(jobs.user, userId),
+        eq(jobs.name, name),
+    )).limit(1);
+
+    if (result.length !== 1) {
+      console.warn("received replicate webhook for unknown job");
+      return;
+    }
+
+    const status = body.status;
+
+    const job = result[0];
+    console.log("got  result now: ", job);
+    job.updates.push(body);
+
+    await db.update(jobs).set({
+      last_update: status,
+      updates: job.updates,
+    }).where(and(
+        eq(jobs.user, userId),
+        eq(jobs.name, name),
+    ));
+
+    console.log("updated it even");
+
+
+    if (status !== "succeeded") {
+      return;
+    }
+
+    const weightsFileUrl = body.output;
+    const response = await fetch(weightsFileUrl);
+    const weightsFileBody = await response.arrayBuffer();
+
+    const fileName = `weights_${userId}_${name}.tar`;
+
+    await client.putObject({
+      Bucket: env.AWS_S3_BUCKET,
+      Key: fileName,
+      Body: weightsFileBody,
+    });
+
+    const url = `https://${env.AWS_S3_BUCKET}.s3.eu-central-1.amazonaws.com/${fileName}`;
+
+    await db.update(jobs).set({
+      weights: url
+    }).where(and(
+        eq(jobs.user, userId),
+        eq(jobs.name, name),
+    ));
+
+    console.log("received weights file!");
+
+    // todo: notify the user somehow that its now completed?
+  });
+
+  return c.json({
+    success: true
+  });
 });
 
 /*app.get("/", async (c) => {
