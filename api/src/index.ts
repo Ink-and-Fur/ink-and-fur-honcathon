@@ -1,11 +1,21 @@
 import { clerkMiddleware, getAuth, Hono, load, neon } from "./deps.ts";
 // import { logger, Mizu } from "./mizu.ts";
+import * as AWS from "s3";
 
 const env = await load();
+
+const client = new AWS.S3({
+  credentials: {
+    accessKeyId: env.AWS_ACCESS_KEY,
+    secretAccessKey: env.AWS_SECRET_ACCESS_KEY
+  },
+  region: "eu-central-1"
+});
 
 type Bindings = {
   DATABASE_URL: string;
   MIZU_ENDPOINT: string;
+  AWS_S3_BUCKET: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -43,6 +53,18 @@ app.get("/no-db", async (c) => {
     message: "Hello, world!",
   });
 });
+
+app.get("/s3", async (c) => {
+  const data = await client.putObject({
+    Bucket: env.AWS_S3_BUCKET,
+    Key: "meow2.txt",
+    Body: "hello"
+  });
+
+  console.log(data);
+
+  return c.text('Hello Hono!')
+})
 
 app.get("/api/users", async (c) => {
   const sql = neon(env.DATABASE_URL);

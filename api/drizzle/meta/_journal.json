@@ -8,6 +8,13 @@
       "when": 1717066853884,
       "tag": "0000_real_quasimodo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1721133794407,
+      "tag": "0001_curious_doctor_strange",
+      "breakpoints": true
     }
   ]
 }
