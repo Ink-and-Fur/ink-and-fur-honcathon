@@ -11,6 +11,11 @@ export enum WebhookPredictionStatus {
   PROCESSING = 'processing',
   SUCCEEDED = 'succeeded',
   FAILED = 'failed',
+  /**
+   * Only called if user cancels a job from the replicate UI,
+   * so in practice we will not need this,
+   * unless we support canceling jobs in our own UI?
+   */
   CANCELED = 'canceled'
 }
 
@@ -43,8 +48,7 @@ type TrainLoraInput = {
  * 
  * Uses community model: zylim0702/sdxl-lora-customize-training:2ea90da29b19984472a0bbad4ecb39abe4b91fa0d6a5e8dc59988022149dee55
  *
- * @todo - Retry if failure
- * @todo - Handle errors
+ * @todo - Retry if failure?
  * 
  * @example
  * ```ts
@@ -106,27 +110,55 @@ type CreateImageInputOptions = Partial<{
 }>
 
 /**
- * Run prediction based on lora weights
+ * Create an image of a pet based on lora weights
  * 
  * Uses community model: zylim0702/sdxl-lora-customize-model:5a2b1cff79a2cf60d2a498b424795a90e26b7a3992fbd13b340f73ff4942b81e
+ * 
+ * @todo - Retry if failure
+ * 
+ * @example
+ * ```ts
+ * const { data, error } = await createImageWithLoraWeights({
+ *   loraUrl: 'https://example.com/lora.zip',
+ *   prompt: 'a photo of TOK',
+ *   webhook: 'https://inkandfur.com/webhook',
+ *   webhookEventsFilter: [PREDICTION_STARTING, PREDICTION_SUCCEEDED, PREDICTION_FAILED],
+ *   inputOptions: {
+ *     negative_prompt: "frame, signature",
+ *     lora_scale: 0.75,
+ *   }
+ * })
+ * ```
  */
 export async function createImageWithLoraWeights(
+  /** HTTP URL to publicly hosted LoRA weights for a given pet */
   loraUrl: string,
+  /** Prompt to generate an image with */
   prompt: string,
+  /** Webhook URL (in our api) to receive events about the progress of the training */
   webhook: string,
+  /** Webhook events we wish to receive */
   webhookEventsFilter: WebhookEvent[],
+  /** Options for the prediction */
   inputOptions: CreateImageInputOptions = {},
 ) {
-  const output = await replicate.predictions.create({
-    version: '5a2b1cff79a2cf60d2a498b424795a90e26b7a3992fbd13b340f73ff4942b81e',
-    input: {
-      ...inputOptions,
-      Lora_url: loraUrl,
-      prompt,
-    },
-    webhook,
-    webhook_events_filter: webhookEventsFilter,
-  })
+  try {
+    const output = await replicate.predictions.create({
+      version: '5a2b1cff79a2cf60d2a498b424795a90e26b7a3992fbd13b340f73ff4942b81e',
+      input: {
+        ...inputOptions,
+        Lora_url: loraUrl,
+        prompt,
+      },
+      webhook,
+      webhook_events_filter: webhookEventsFilter,
+    })
 
-  return output
+    return { data: output, error: null, }
+  } catch (error) {
+    return {
+      error,
+      data: null
+    }
+  }
 }
