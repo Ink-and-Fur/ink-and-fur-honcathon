@@ -58,19 +58,22 @@ export function SkeletonLoading() {
 }
 
 
+/**
+ * @NOTE - I commented out auth for now because it's a pain in the rumpus to test locally
+ */
 export default function DashboardLayout() {
-  const { userId, isLoaded } = useAuth()
-  const navigate = useNavigate()
+  // const { userId, isLoaded } = useAuth()
+  // const navigate = useNavigate()
 
-  console.log('test', userId)
+  // console.log('test', userId)
 
-  useEffect(() => {
-    if (isLoaded && !userId) {
-      navigate("/login")
-    }
-  }, [isLoaded, navigate, userId])
+  // useEffect(() => {
+  //   if (isLoaded && !userId) {
+  //     navigate("/login")
+  //   }
+  // }, [isLoaded, navigate, userId])
 
-  if (!isLoaded) return <SkeletonLoading />
+  // if (!isLoaded) return <SkeletonLoading />
 
   return (
     <Outlet />
