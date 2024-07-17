@@ -1,15 +1,5 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
-  Book,
-  Code2,
-  LifeBuoy,
   PawPrint,
-  Share,
-  Triangle,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -22,12 +12,9 @@ import { Label } from "@/components/ui/label"
 //   TooltipTrigger,
 // } from "@/components/ui/tooltip"
 // import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
-import { Link, Outlet } from "react-router-dom"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ImageUpload } from "./ImageUpload.tsx";
+import { ImageUpload } from "./PetForm/ImageUpload.tsx";
 import { LoggedInLayout } from "./LoggedInLayout.tsx"
-import { useToast } from "./components/ui/use-toast.ts";
-import { useCreatePet } from "./queries/index.ts";
 import { usePetForm } from "./PetForm/form.tsx";
 import { Form, FormField } from "./components/ui/form.tsx";
 
@@ -64,7 +51,7 @@ export default function HomeLayout() {
 }
 
 export function Home() {
-  const { form, onSubmit } = usePetForm()
+  const { form, onSubmit, images, handleImageUpload } = usePetForm()
 
   return (
     <div
@@ -87,7 +74,7 @@ export function Home() {
             )}
           />
           <div className="grid gap-4">
-            <ImageUpload />
+            <ImageUpload images={images} handleImageUpload={handleImageUpload} />
           </div>
           <Button type="submit"><PawPrint className="w-4 h-4 mr-2" /></Button>
         </fieldset>

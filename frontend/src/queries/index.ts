@@ -1,15 +1,14 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 // TODO - Add zip file...
-function createPet({ name }: { name: string }) {
+function createPet({ name, zip }: { name: string; zip: Blob }) {
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("zip", zip);
+
   return fetch("/v0/jobs", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name,
-    }),
+    body: formData,
   }).then((r) => r.json());
 }
 
