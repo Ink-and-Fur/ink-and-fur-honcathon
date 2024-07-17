@@ -91,6 +91,17 @@ export async function trainLora({ inputImages, webhook, webhookEventsFilter }: T
   }
 }
 
+/**
+ * URL to download the LoRA weights for a pet
+ * Only valid for 1 hour before Replicate deletes it!
+ */
+type UrlToWeights = string;
+type TrainLoraWebhookSuccessPayload = { status: WebhookPredictionStatus.SUCCEEDED, output: UrlToWeights }
+export const handleTrainLoraWebhookSuccess = (webhookPayload: TrainLoraWebhookSuccessPayload) => {
+  // TODO - Stream weights file to S3 asynchronously
+  //        (do not block the webhook handler from returning while downloading the file, or you'll get lots of replays)
+}
+
 type CreateImageInputOptions = Partial<{
   negative_prompt?: string
   /** default: 1024 */
@@ -161,4 +172,12 @@ export async function createImageWithLoraWeights(
       data: null
     }
   }
+}
+
+type ImageUrl = string;
+type CreateImageWebhookSuccessOutput = Array<ImageUrl>;
+type CreateImageWebhookSuccessPayload = { status: WebhookPredictionStatus.SUCCEEDED, output: CreateImageWebhookSuccessOutput }
+export const handleCreateImageWithLoraWeightsWebhookSuccess = (webhookPayload: CreateImageWebhookSuccessPayload) => {
+  // TODO - Upload image files to S3 asynchronously
+  //        (do not block the webhook handler from returning while uploading the files, or you'll get lots of replays)
 }
