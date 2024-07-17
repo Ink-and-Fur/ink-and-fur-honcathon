@@ -25,7 +25,7 @@ export function ImageUpload() {
         htmlFor="image-upload"
         className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-gray-400 rounded-lg cursor-pointer"
       >
-        <span className="text-gray-500">Click to upload</span>
+        <span className="text-gray-500">add foto</span>
         <input
           id="image-upload"
           type="file"

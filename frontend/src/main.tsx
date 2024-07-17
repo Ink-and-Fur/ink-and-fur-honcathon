@@ -9,6 +9,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { LoggedInLayout } from './LoggedInLayout.tsx'
 import { PetDetails } from './PetDetails.tsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from './components/ui/toaster.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -46,6 +47,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <TooltipProvider>
         <RouterProvider router={router} />
       </TooltipProvider>
+      <Toaster />
     </QueryClientProvider>
   </React.StrictMode>,
 )

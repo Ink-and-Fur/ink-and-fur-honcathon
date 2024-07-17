@@ -29,7 +29,7 @@ import { LoggedInLayout } from "./LoggedInLayout.tsx"
 import { useToast } from "./components/ui/use-toast.ts";
 import { useCreatePet } from "./queries/index.ts";
 import { usePetForm } from "./PetForm/form.tsx";
-import { FormField } from "./components/ui/form.tsx";
+import { Form, FormField } from "./components/ui/form.tsx";
 
 export function SkeletonLoading() {
   return (
@@ -70,7 +70,8 @@ export function Home() {
     <div
       className="relative flex flex-col items-start gap-8"
     >
-      <form className="grid w-full items-start gap-6">
+      <Form {...form}>
+        <form className="grid w-full items-start gap-6" onSubmit={form.handleSubmit(onSubmit)}>
         <fieldset className="grid gap-6 rounded-lg border p-4">
           <legend className="-ml-1 px-1 text-sm font-medium">
             Pet
@@ -85,11 +86,13 @@ export function Home() {
               </div>
             )}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <ImageUpload />
           </div>
+          <Button type="submit"><PawPrint className="w-4 h-4 mr-2" /></Button>
         </fieldset>
-      </form>
+        </form>
+      </Form>
     </div>
   )
 }

@@ -34,7 +34,7 @@ export function usePetForm() {
         },
         onError(error) {
           toast({
-            title: "Settings failed to update!",
+            title: "No can create pet!",
             description: (
               <pre className="mt-2 w-[340px] rounded-md p-4" >
                 <code className="text-red-400">
