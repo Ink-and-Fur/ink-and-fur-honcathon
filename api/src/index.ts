@@ -123,17 +123,18 @@ app.post("/api/jobs", async (c) => {
 
   const url = `https://${env.AWS_S3_BUCKET}.s3.eu-central-1.amazonaws.com/${fileName}`;
 
-  await db.insert(jobs).values({
+  const result = await db.insert(jobs).values({
     user: userId,
     name: name,
     images: url
-  });
+  }).returning();
 
   // now that all the stuff has been successfully uploaded and inserted into our db
   // it is time to start the job
   return c.json({
-    success: true
-  })
+    success: true,
+    job: result?.[0]
+  });
 });
 
 /*app.get("/", async (c) => {
