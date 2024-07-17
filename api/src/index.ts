@@ -1,4 +1,4 @@
-import { clerkMiddleware, getAuth, Hono, load, neon, drizzle, eq } from "./deps.ts";
+import { clerkMiddleware, getAuth, Hono, load, neon, drizzle, eq, and } from "./deps.ts";
 // import { logger, Mizu } from "./mizu.ts";
 import * as AWS from "s3";
 import {jobs} from "./db/schema.ts";
@@ -100,6 +100,19 @@ app.post("/api/jobs", async (c) => {
   const name = body["name"].toLowerCase(); // mby check that this is ascii only
   const file = body["file"]; // mby check that this is actually a .zip file
 
+  const result = await db.select().from(jobs).where(and(
+      eq(jobs.user, userId),
+      eq(jobs.name, name),
+  )).limit(1);
+
+  if (result.length !== 0) {
+    c.status(400);
+    return c.json({
+      error: "already_exists",
+      description: "a pet with this name already exists for the current user"
+    });
+  }
+
   const fileName = `images_${userId}_${name}.zip`;
 
   await client.putObject({
@@ -118,7 +131,9 @@ app.post("/api/jobs", async (c) => {
 
   // now that all the stuff has been successfully uploaded and inserted into our db
   // it is time to start the job
-
+  return c.json({
+    success: true
+  })
 });
 
 /*app.get("/", async (c) => {
