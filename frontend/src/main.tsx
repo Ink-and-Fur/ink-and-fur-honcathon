@@ -8,6 +8,8 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { LoggedInLayout } from './LoggedInLayout.tsx'
 import { PetDetails } from './PetDetails.tsx'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from './components/ui/toaster.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -36,12 +38,16 @@ const router = createBrowserRouter([
   }
 ])
 
+const queryClient = new QueryClient()
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <TooltipProvider>
-      <RouterProvider router={router} />
-    </TooltipProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+      </TooltipProvider>
+      <Toaster />
+    </QueryClientProvider>
   </React.StrictMode>,
 )

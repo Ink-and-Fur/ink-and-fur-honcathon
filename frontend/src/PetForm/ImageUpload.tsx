@@ -1,31 +1,12 @@
-import { useState } from "react";
 
-
-function useImageUpload() {
-  const [images, setImages] = useState<File[]>([]);
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      setImages([...images, ...Array.from(event.target.files)]);
-    }
-  };
-
-  return {
-    images,
-    handleImageUpload,
-  };
-}
-
-export function ImageUpload() {
-  const { images, handleImageUpload } = useImageUpload();
-
+export function ImageUpload({ images, handleImageUpload }: { images: File[], handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
   return (
     <div className="flex flex-col items-center">
       <label
         htmlFor="image-upload"
         className="flex items-center justify-center w-32 h-32 border-2 border-dashed border-gray-400 rounded-lg cursor-pointer"
       >
-        <span className="text-gray-500">Click to upload</span>
+        <span className="text-gray-500">add foto</span>
         <input
           id="image-upload"
           type="file"
