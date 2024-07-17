@@ -5,7 +5,16 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 // import {
 //   Tooltip,
 //   TooltipContent,
@@ -60,11 +69,26 @@ export function Home() {
       className="relative flex flex-col items-start gap-8"
     >
       {isPending && <SkeletonLoading />}
-      {pets?.jobs.map((pet) => (
-        <div key={pet.id}>
-          <h2>{pet.name}</h2>
-        </div>
-      ))}
+      {pets?.jobs.length > 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {pets.jobs.map((pet: { id: number, name: string }) => (
+              <TableRow key={pet.id}>
+                <TableCell>{pet.name}</TableCell>
+                <TableCell>
+                  {/* Add any action buttons or links here */}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
       <Form {...form}>
         <form className="grid w-full items-start gap-6" onSubmit={form.handleSubmit(onSubmit)}>
         <fieldset className="grid gap-6 rounded-lg border p-4">
