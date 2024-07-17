@@ -4,7 +4,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 function createPet({ name, zip }: { name: string; zip: Blob }) {
   const formData = new FormData();
   formData.append("name", name);
-  formData.append("zip", zip);
+  formData.append("file", zip);
 
   return fetch("/api/jobs", {
     method: "POST",
