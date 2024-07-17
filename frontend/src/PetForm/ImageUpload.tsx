@@ -34,9 +34,9 @@ export function ImageUpload({ images, handleImageUpload, handleRemoveImage }: { 
               size="sm"
               variant="ghost"
               onClick={() => handleRemoveImage(index)}
-              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
+              className="absolute -top-2 -right-2 bg-red-300 rounded-full p-0 h-4 w-4 flex items-center justify-center"
             >
-              <X className="w-4 h-4" />
+              <X size={12} />
             </Button>
           </div>
         ))}
