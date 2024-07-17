@@ -17,6 +17,7 @@ import { ImageUpload } from "./PetForm/ImageUpload.tsx";
 import { LoggedInLayout } from "./LoggedInLayout.tsx"
 import { usePetForm } from "./PetForm/form.tsx";
 import { Form, FormField } from "./components/ui/form.tsx";
+import { useGetPets } from "./queries/index.ts"
 
 export function SkeletonLoading() {
   return (
@@ -51,12 +52,19 @@ export default function HomeLayout() {
 }
 
 export function Home() {
+  const { data: pets, isPending } = useGetPets();
   const { form, onSubmit, images, handleImageUpload, handleRemoveImage } = usePetForm()
 
   return (
     <div
       className="relative flex flex-col items-start gap-8"
     >
+      {isPending && <SkeletonLoading />}
+      {pets?.jobs.map((pet) => (
+        <div key={pet.id}>
+          <h2>{pet.name}</h2>
+        </div>
+      ))}
       <Form {...form}>
         <form className="grid w-full items-start gap-6" onSubmit={form.handleSubmit(onSubmit)}>
         <fieldset className="grid gap-6 rounded-lg border p-4">
