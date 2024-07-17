@@ -1,4 +1,17 @@
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+
+function getPets() {
+  return fetch("/api/jobs").then((r) => r.json());
+}
+
+export function useGetPets() {
+  const query = useQuery({
+    queryKey: ["pets"],
+    queryFn: getPets,
+  });
+
+  return query;
+}
 
 // TODO - Add zip file...
 function createPet({ name, zip }: { name: string; zip: Blob }) {
