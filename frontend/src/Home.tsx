@@ -1,3 +1,8 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Book,
   Code2,
@@ -8,20 +13,22 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip"
+// import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import { Link, Outlet } from "react-router-dom"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ImageUpload } from "./ImageUpload.tsx";
 import { LoggedInLayout } from "./LoggedInLayout.tsx"
+import { useToast } from "./components/ui/use-toast.ts";
+import { useCreatePet } from "./queries/index.ts";
+import { usePetForm } from "./PetForm/form.tsx";
 
 export function SkeletonLoading() {
   return (
@@ -56,6 +63,8 @@ export default function HomeLayout() {
 }
 
 export function Home() {
+  const { form, onSubmit } = usePetForm()
+  
   return (
     <div
       className="relative flex flex-col items-start gap-8"
