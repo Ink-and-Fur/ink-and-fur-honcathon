@@ -14,7 +14,7 @@ export const FormSchema = z.object({
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function usePetForm() {
-  const { images, handleImageUpload } = useImageUpload();
+  const { images, handleImageUpload, handleRemoveImage } = useImageUpload();
   const { toast } = useToast();
 
   const { mutate: createPet } = useCreatePet();
@@ -74,7 +74,8 @@ export function usePetForm() {
     onSubmit,
     form,
     images,
-    handleImageUpload
+    handleImageUpload,
+    handleRemoveImage
   };
 }
 
@@ -92,8 +93,13 @@ function useImageUpload() {
     }
   };
 
+  const handleRemoveImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
   return {
     images,
     handleImageUpload,
+    handleRemoveImage
   };
 }

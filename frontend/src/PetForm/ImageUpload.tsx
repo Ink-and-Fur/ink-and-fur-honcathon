@@ -1,5 +1,10 @@
+import {
+  X,
+} from "lucide-react"
 
-export function ImageUpload({ images, handleImageUpload }: { images: File[], handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
+import { Button } from "@/components/ui/button";
+
+export function ImageUpload({ images, handleImageUpload, handleRemoveImage }: { images: File[], handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void, handleRemoveImage: (index: number) => void }) {
   return (
     <div className="flex flex-col items-center">
       <label
@@ -18,12 +23,22 @@ export function ImageUpload({ images, handleImageUpload }: { images: File[], han
       </label>
       <div className="mt-4 grid grid-cols-2 gap-2">
         {images.map((image, index) => (
-          <img
-            key={image.name ?? index}
-            src={URL.createObjectURL(image)}
-            alt={`Upload Preview ${index}`}
-            className="w-16 h-16 object-cover rounded"
-          />
+          <div key={image.name ?? index} className="relative w-16 h-16">
+            <img
+              src={URL.createObjectURL(image)}
+              alt={`Upload Preview ${index}`}
+              className="w-full h-full object-cover rounded"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={() => handleRemoveImage(index)}
+              className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
         ))}
       </div>
     </div>

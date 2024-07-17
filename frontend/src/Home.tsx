@@ -51,7 +51,7 @@ export default function HomeLayout() {
 }
 
 export function Home() {
-  const { form, onSubmit, images, handleImageUpload } = usePetForm()
+  const { form, onSubmit, images, handleImageUpload, handleRemoveImage } = usePetForm()
 
   return (
     <div
@@ -74,7 +74,7 @@ export function Home() {
             )}
           />
           <div className="grid gap-4">
-            <ImageUpload images={images} handleImageUpload={handleImageUpload} />
+            <ImageUpload images={images} handleImageUpload={handleImageUpload} handleRemoveImage={handleRemoveImage} />
           </div>
           <Button type="submit"><PawPrint className="w-4 h-4 mr-2" /></Button>
         </fieldset>
