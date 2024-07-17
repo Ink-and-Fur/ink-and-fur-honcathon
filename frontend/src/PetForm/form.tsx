@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 export const FormSchema = z.object({
-  name: z.string(),
+  petName: z.string(),
 });
 
 
@@ -17,16 +17,14 @@ export function usePetForm() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "",
+      petName: "",
     },
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     createPet(
       {
-        content: {
-          name: data.name,
-        },
+        name: data.petName,
       },
       {
         onSuccess() {

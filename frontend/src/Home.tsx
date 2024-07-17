@@ -29,6 +29,7 @@ import { LoggedInLayout } from "./LoggedInLayout.tsx"
 import { useToast } from "./components/ui/use-toast.ts";
 import { useCreatePet } from "./queries/index.ts";
 import { usePetForm } from "./PetForm/form.tsx";
+import { FormField } from "./components/ui/form.tsx";
 
 export function SkeletonLoading() {
   return (
@@ -64,7 +65,7 @@ export default function HomeLayout() {
 
 export function Home() {
   const { form, onSubmit } = usePetForm()
-  
+
   return (
     <div
       className="relative flex flex-col items-start gap-8"
@@ -74,10 +75,16 @@ export function Home() {
           <legend className="-ml-1 px-1 text-sm font-medium">
             Pet
           </legend>
-          <div className="grid gap-3">
-            <Label htmlFor="pet_name">Name</Label>
-            <Input id="pet_name" type="text" placeholder="Larry" />
-          </div>
+          <FormField
+            control={form.control}
+            name="petName"
+            render={({ field }) => (
+              <div className="grid gap-3">
+                <Label htmlFor="pet_name">Name</Label>
+                <Input id="pet_name" type="text" placeholder="Larry" value={field.value} onChange={(e) => field.onChange(e.target.value)} />
+              </div>
+            )}
+          />
           <div className="grid grid-cols-2 gap-4">
             <ImageUpload />
           </div>
