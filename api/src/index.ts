@@ -192,7 +192,7 @@ app.get("/api/jobs/:name", async (c) => {
   // todo replace this with actual auth later down the road
   let userId = 10;
 
-  const { name } = c.req.param;
+  const name = c.req.param("name");
 
   const result = await db.select().from(jobs).where(and(
     eq(jobs.user, userId),
@@ -207,9 +207,7 @@ app.get("/api/jobs/:name", async (c) => {
     });
   }
 
-  return c.json({
-    job: result[0],
-  });
+  return c.json(result[0]);
 });
 
 /*app.get("/", async (c) => {

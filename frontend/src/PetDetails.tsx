@@ -11,7 +11,7 @@ export function PetDetails() {
       {isPending && <p>Loading...</p>}
       {pet && (
         <div>
-          <p>{pet.name}</p>
+          <p>{JSON.stringify(pet, 2)}</p>
         </div>
       )}
     </div>
