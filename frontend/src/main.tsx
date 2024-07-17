@@ -22,16 +22,14 @@ const router = createBrowserRouter([
           { element: <Dashboard />, index: true },
         ]
       },
-      { path: "/login/*", element: <LoginForm /> },
-      // { path: "/sign-up/*", element: <SignUpPage /> },
+      // FOR ADE
+      //
       // {
-      //   element: <DashboardLayout />,
-      //   path: "dashboard",
-      //   children: [
-      //     { path: "/dashboard", element: <DashboardPage /> },
-      //     { path: "/dashboard/invoices", element: <InvoicesPage /> }
+      //   path: "/jobs", element: <JobsLayout />, children: [
+      //     { element: <Jobs />, index: true },
       //   ]
-      // }
+      // },
+      { path: "/login/*", element: <LoginForm /> },
     ]
   }
 ])
