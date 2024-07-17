@@ -1,0 +1,23 @@
+{
+	"folders": [
+		{
+			"name": "project-root",
+			"path": "./"
+		},
+		{
+			"name": "api",
+			"path": "./api"
+		},
+		{
+			"name": "frontend",
+			"path": "./frontend"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"api/src": true
+		},
+		"deno.importMap": "./api/deno.json",
+		"search.followSymlinks": false
+	}
+}
