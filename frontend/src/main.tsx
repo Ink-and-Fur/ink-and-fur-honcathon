@@ -6,8 +6,8 @@ import { LoginForm } from './Login.tsx'
 import RootLayout from './RootLayout.tsx'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
-
-// import 'https://unpkg.com/paper-css@0.4.1/paper.min.css';
+import { LoggedInLayout } from './LoggedInLayout.tsx'
+import { PetDetails } from './PetDetails.tsx'
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -26,11 +26,11 @@ const router = createBrowserRouter([
       },
       // FOR ADE
       //
-      // {
-      //   path: "/pet/:id", element: <PetLayout />, children: [
-      //     { element: <Pet /> },
-      //   ]
-      // },
+      {
+        path: "/pet/:id", element: <LoggedInLayout />, children: [
+          { element: <PetDetails /> },
+        ]
+      },
       { path: "/login/*", element: <LoginForm /> },
     ]
   }
