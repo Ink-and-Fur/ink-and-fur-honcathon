@@ -6,7 +6,7 @@ function createPet({ name, zip }: { name: string; zip: Blob }) {
   formData.append("name", name);
   formData.append("zip", zip);
 
-  return fetch("/v0/jobs", {
+  return fetch("/api/jobs", {
     method: "POST",
     body: formData,
   }).then((r) => r.json());
