@@ -52,3 +52,25 @@ export function useCreatePet() {
 
   return mutation;
 }
+
+function generatePetPicture({ name, prompt, negative }: { name: string; prompt: string; negative: string }) {
+  return fetch("/api/generate", {
+    method: "POST",
+    body: JSON.stringify({ name, prompt, negative }),
+  }).then((r) => r.json());
+}
+
+export function useGeneratePetPicture() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: generatePetPicture,
+    onSuccess: () => {
+      // Invalidate and refetch requestor requests
+      queryClient.invalidateQueries({
+        queryKey: ["pets"],
+      });
+    },
+  });
+
+  return mutation;
+}

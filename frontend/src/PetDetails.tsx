@@ -1,24 +1,8 @@
 import { useParams } from "react-router-dom";
 import { useMemo, useState } from "react";
 
-import { useGetPet } from "./queries/index.ts";
-import {
-  Bird,
-  Book,
-  Bot,
-  Code2,
-  CornerDownLeft,
-  LifeBuoy,
-  Mic,
-  Paperclip,
-  Rabbit,
-  Settings,
-  Settings2,
-  Share,
-  SquareTerminal,
-  Triangle,
-  Turtle,
-} from "lucide-react";
+import { useGeneratePetPicture, useGetPet } from "./queries/index.ts";
+import { Camera } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,88 +43,105 @@ export function PetDetails() {
   const { data: pet, isPending } = useGetPet(name ?? "");
   const lastUpdateStatus = pet?.last_update;
   const lastUpdate = useMemo(() => {
-    return pet?.updates.find((update) => update.status === lastUpdateStatus);
+    return pet?.updates?.find((update) => update.status === lastUpdateStatus);
   }, [pet?.updates, lastUpdateStatus]);
   const [value, setValue] = useState("sailor");
   const [prompt, setPrompt] = useState("");
   const [negative, setNegative] = useState("");
+
+  const mutate = useGeneratePetPicture();
+
   return (
-    <div>
-      {isPending && <p>Loading...</p>}
-      {pet && (
-        <div>
-          <h1>{pet.name}</h1>
-          <p>status: {lastUpdateStatus ?? "unknown"}</p>
-          <p>
-            updated at: {lastUpdate?.completed_at || lastUpdate?.created_at}
-          </p>
-        </div>
-      )}
-      {lastUpdateStatus === "succeeded" && (
-        <form className="grid w-full items-start gap-6 overflow-auto p-4 pt-0">
-          <fieldset className="grid gap-6 rounded-lg border p-4">
-            <legend className="-ml-1 px-1 text-sm font-medium">
-              Generate a photo
-            </legend>
-            <div className="grid gap-3">
-              <Label htmlFor="prompt">Prompt</Label>
-              <Select onValueChange={(value) => setValue(value)} value={value}>
-                <SelectTrigger
-                  id="model"
-                  className="items-start [&_[data-description]]:hidden"
-                  onChange={(value) => console.log(value)}
+    <>
+      <div>
+        {isPending && <p>Loading...</p>}
+        {pet && (
+          <div>
+            <h1>{pet.name}</h1>
+            <p>status: {lastUpdateStatus ?? "unknown"}</p>
+            <p>
+              updated at: {lastUpdate?.completed_at || lastUpdate?.created_at}
+            </p>
+          </div>
+        )}
+        {lastUpdateStatus === "succeeded" && (
+          <form className="grid w-full items-start gap-6 overflow-auto p-4 pt-0">
+            <fieldset className="grid gap-6 rounded-lg border p-4">
+              <legend className="-ml-1 px-1 text-sm font-medium">
+                Generate a photo
+              </legend>
+              <div className="grid gap-3">
+                <Label htmlFor="prompt">Prompt</Label>
+                <Select
+                  onValueChange={(value) => setValue(value)}
+                  value={value}
                 >
-                  <SelectValue placeholder="Select a prompt" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(prompts).map(([id, prompt]) => (
-                    <SelectItem key={id} value={id}>
-                      <div className="flex items-start gap-3 text-muted-foreground">
-                        <div className="grid gap-0.5">
-                          <p>
-                            <span className="font-medium text-foreground">
-                              {id}
-                            </span>
-                          </p>
-                          <p className="text-xs" data-description>
-                            {prompt}
-                          </p>
+                  <SelectTrigger
+                    id="model"
+                    className="items-start [&_[data-description]]:hidden"
+                    onChange={(value) => console.log(value)}
+                  >
+                    <SelectValue placeholder="Select a prompt" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(prompts).map(([id, prompt]) => (
+                      <SelectItem key={id} value={id}>
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                {id}
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              {prompt}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Textarea
-                id="prompt"
-                placeholder="Enter a custom prompt"
-                disabled={value !== "custom"}
-                value={(value === "custom"
-                  ? prompt
-                  : prompts[value as keyof typeof prompts]).replaceAll(
-                    "TOK",
-                    pet?.name,
-                  )}
-                onChange={(e) => setPrompt(e.target.value)}
-              />
-              <Textarea
-                id="negative"
-                placeholder="Enter a negative prompt"
-                value={negative}
-                onChange={(e) => setNegative(e.target.value)}
-              />
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto gap-1.5 text-sm"
-            >
-              <Share className="size-3.5" />
-              Generate
-            </Button>
-          </fieldset>
-        </form>
-      )}
-    </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Textarea
+                  id="prompt"
+                  placeholder="Enter a custom prompt"
+                  disabled={value !== "custom"}
+                  value={(value === "custom"
+                    ? prompt
+                    : prompts[value as keyof typeof prompts]).replaceAll(
+                      "TOK",
+                      pet?.name,
+                    )}
+                  onChange={(e) => setPrompt(e.target.value)}
+                />
+                <Textarea
+                  id="negative"
+                  placeholder="Enter a negative prompt"
+                  value={negative}
+                  onChange={(e) => setNegative(e.target.value)}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto gap-1.5 text-sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  mutate.mutate({
+                    name: name!,
+                    prompt: prompt || prompts[value as keyof typeof prompts],
+                    negative,
+                  });
+                }}
+              >
+                <Camera className="size-3.5" />
+                Generate
+              </Button>
+            </fieldset>
+          </form>
+        )}
+      </div>
+      <div>Photos</div>
+    </>
   );
 }
