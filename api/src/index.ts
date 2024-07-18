@@ -20,8 +20,6 @@ import {
 
 const env = await load({ export: true });
 
-console.log(`hotel: ${env.HOTEL}`)
-
 const client = new AWS.S3({
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY,

@@ -2,8 +2,6 @@ FROM denoland/deno
 
 EXPOSE 8000
 
-ARG HOTEL
-
 WORKDIR /app
 
 ADD deno.json .
