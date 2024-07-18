@@ -26,10 +26,10 @@ export function useGetPet(name: string) {
   return query;
 }
 
-// TODO - Add zip file...
-function createPet({ name, zip }: { name: string; zip: Blob }) {
+function createPet({ name, zip, petType }: { name: string; zip: Blob; petType: string }) {
   const formData = new FormData();
   formData.append("name", name);
+  formData.append("type", petType);
   formData.append("file", zip);
 
   return fetch("/api/jobs", {

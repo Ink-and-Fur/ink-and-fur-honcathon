@@ -6,18 +6,19 @@ import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import {
-//   Tooltip,
-//   TooltipContent,
-//   TooltipTrigger,
-// } from "@/components/ui/tooltip"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 // import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageUpload } from "./PetForm/ImageUpload.tsx";
@@ -80,7 +81,7 @@ export function Home() {
         >
           <fieldset className="grid gap-6 rounded-lg border p-4">
             <legend className="-ml-1 px-1 text-sm font-medium">
-              Pet
+              create your pet &lt;3
             </legend>
             <FormField
               control={form.control}
@@ -91,10 +92,55 @@ export function Home() {
                   <Input
                     id="pet_name"
                     type="text"
-                    placeholder="Larry"
+                    placeholder="Paco da Corgi"
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                   />
+                </div>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="petType"
+              render={({ field }) => (
+                <div className="grid gap-3">
+                  <Label htmlFor="pet_type">cat or dog?</Label>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    value={field.value}
+                  >
+                    <SelectTrigger
+                      id="pet_type"
+                      className="items-start [&_[data-description]]:hidden"
+                      onChange={(value) => console.log(value)}
+                    >
+                      <SelectValue placeholder="Select a pet type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="cat">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                cat
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="dog">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                dog
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             />
@@ -112,15 +158,15 @@ export function Home() {
         </form>
       </Form>
       {pets?.jobs.length > 0 && (
-        <div className="grid gap-6 rounded-lg min-w-full">
-          <div className="grid rounded-lg border py-2 px-4">
-            <legend className="-ml-1 -mt-4 bg-white inline-flex w-16 px-1 text-sm font-medium">
-              Your Pets
+        <div className="grid rounded-lg min-w-full lg:p-2.5">
+          <div className="rounded-lg border">
+            <legend className="ml-3 -mt-2.5 lg:-mt-2.5 lg:ml-2 bg-white inline-flex w-[85px] px-1 text-sm font-medium">
+              ur beebees
             </legend>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead>name</TableHead>
                   <TableHead className="w-[100px]">Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -142,32 +188,8 @@ export function Home() {
               </TableBody>
             </Table>
           </div>
-
         </div>
       )}
-      <Form {...form}>
-        <form className="grid w-full items-start gap-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <fieldset className="grid gap-6 rounded-lg border p-4">
-            <legend className="-ml-1 px-1 text-sm font-medium">
-              Add a Pet
-            </legend>
-            <FormField
-              control={form.control}
-              name="petName"
-              render={({ field }) => (
-                <div className="grid gap-3">
-                  <Label htmlFor="pet_name">Name</Label>
-                  <Input id="pet_name" type="text" placeholder="Paco da Corgi" value={field.value} onChange={(e) => field.onChange(e.target.value)} />
-                </div>
-              )}
-            />
-            <div className="grid gap-4">
-              <ImageUpload images={images} handleImageUpload={handleImageUpload} handleRemoveImage={handleRemoveImage} />
-            </div>
-            <Button type="submit"><PawPrint className="w-4 h-4 mr-2" /></Button>
-          </fieldset>
-        </form>
-      </Form>
     </>
   )
 }

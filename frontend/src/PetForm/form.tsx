@@ -9,6 +9,7 @@ import { createZipFromFiles } from "./zip";
 
 export const FormSchema = z.object({
   petName: z.string(),
+  petType: z.enum(["dog", "cat"]),
 });
 
 
@@ -23,6 +24,7 @@ export function usePetForm() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       petName: "",
+      petType: "dog",
     },
   });
 
@@ -32,6 +34,7 @@ export function usePetForm() {
       createPet(
         {
           name: data.petName,
+          petType: data.petType,
           zip,
         },
         {
