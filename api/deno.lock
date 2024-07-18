@@ -2,38 +2,38 @@
   "version": "3",
   "packages": {
     "specifiers": {
-      "npm:@fiberplane/hono@0.2.1-beta.1": "npm:@fiberplane/hono@0.2.1-beta.1",
-      "npm:@hono/clerk-auth": "npm:@hono/clerk-auth@2.0.0_@clerk+backend@1.3.1_hono@4.4.6",
+      "npm:@fiberplane/hono@0.2.1-beta.2": "npm:@fiberplane/hono@0.2.1-beta.2",
+      "npm:@hono/clerk-auth": "npm:@hono/clerk-auth@2.0.0_@clerk+backend@1.3.2_hono@4.4.13",
       "npm:@neondatabase/serverless": "npm:@neondatabase/serverless@0.9.4",
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:drizzle-kit": "npm:drizzle-kit@0.23.0_esbuild@0.19.12",
       "npm:drizzle-orm": "npm:drizzle-orm@0.32.0_@neondatabase+serverless@0.9.4",
-      "npm:hono": "npm:hono@4.4.6",
+      "npm:hono@4.4.13": "npm:hono@4.4.13",
       "npm:replicate@0.31.1": "npm:replicate@0.31.1"
     },
     "npm": {
-      "@clerk/backend@1.3.1": {
-        "integrity": "sha512-6/gaj9lDovtBpj+abK4XCNsoLvRmf2IcOAf+tcEGt9ngx5YeUavWoHTWL0jX4wsxXUzUW7GqKAswJJxIlvP1PA==",
+      "@clerk/backend@1.3.2": {
+        "integrity": "sha512-PT/CejuGK0b7+iKFc59myFcYCEpTmqCjSjw7jG0G3fhBo8LWn+Pfv5f7udndrYI+RFP0Jbcv+2nnW6etHXErGA==",
         "dependencies": {
-          "@clerk/shared": "@clerk/shared@2.3.2",
-          "@clerk/types": "@clerk/types@4.7.0",
+          "@clerk/shared": "@clerk/shared@2.3.3",
+          "@clerk/types": "@clerk/types@4.8.0",
           "cookie": "cookie@0.5.0",
           "snakecase-keys": "snakecase-keys@5.4.4",
           "tslib": "tslib@2.4.1"
         }
       },
-      "@clerk/shared@2.3.2": {
-        "integrity": "sha512-uOTYqSmxe41Ye8TnyPtthwLp5rrYK5Ze04bvl1SQzlIibr4qeLU2DXZOYibMnSWvIMwr45pXUHsJh8NfKKIZ2w==",
+      "@clerk/shared@2.3.3": {
+        "integrity": "sha512-shUmoHQNkaiQer2KS++RKXwgA1tqLAXdwFed/AmoHHqkF2jeBDYcJe14LDLveSqt2gzp6IAFcaz2IAZlWxENsw==",
         "dependencies": {
-          "@clerk/types": "@clerk/types@4.7.0",
+          "@clerk/types": "@clerk/types@4.8.0",
           "glob-to-regexp": "glob-to-regexp@0.4.1",
           "js-cookie": "js-cookie@3.0.5",
           "std-env": "std-env@3.7.0",
           "swr": "swr@2.2.5_react@18.3.1"
         }
       },
-      "@clerk/types@4.7.0": {
-        "integrity": "sha512-Gg4zEZLE7wgByMhgHMU69tkIEwfiFKNSbtRwdtAwrW+Pg0blpVpw7XuN0wHNAYFM2COrrKEUaGt8KWZmmdTFbg==",
+      "@clerk/types@4.8.0": {
+        "integrity": "sha512-UjirfALJOWeuRSz+SvTujexlvIXvMC1VzvYlcNmSF0E9wcAcPJnzboLM+SlNTG7p1JMlL4bd0dipsFyWTJsq5A==",
         "dependencies": {
           "csstype": "csstype@3.1.1"
         }
@@ -232,17 +232,17 @@
         "integrity": "sha512-T1QyPSDCyMXaO3pzBkF96E8xMkiRYbUEZADd29SyPGabqxMViNoii+NcK7eWJAEoU6RZyEm5lVSIjTmcdoB9HA==",
         "dependencies": {}
       },
-      "@fiberplane/hono@0.2.1-beta.1": {
-        "integrity": "sha512-i38HP6pQZYmgoVvvEqDOKh5WVI7lk7oJt+7cBJU+oNLTMsmGWkrEW2Ql7pydUinq+ynTSGCIjuL0cF1TnG9i/w==",
+      "@fiberplane/hono@0.2.1-beta.2": {
+        "integrity": "sha512-OIF4DRW9nRERvMzjfyc4LNFBJEDC+0+wQ1ledncKaCfFn83PiGBOWmFCT2s0CY7e7/TAN2+ajY7WaFKAK0d7wg==",
         "dependencies": {
           "@neondatabase/serverless": "@neondatabase/serverless@0.9.4"
         }
       },
-      "@hono/clerk-auth@2.0.0_@clerk+backend@1.3.1_hono@4.4.6": {
+      "@hono/clerk-auth@2.0.0_@clerk+backend@1.3.2_hono@4.4.13": {
         "integrity": "sha512-ad+U8jDlBPgXBTv8BRnPrSFC/uX8U0ojiCR77I3WWHm5I9L3/bHsZpQ2lgvLTV3YbJyVmAdKJArEAQiPjodGdA==",
         "dependencies": {
-          "@clerk/backend": "@clerk/backend@1.3.1",
-          "hono": "hono@4.4.6"
+          "@clerk/backend": "@clerk/backend@1.3.2",
+          "hono": "hono@4.4.13"
         }
       },
       "@neondatabase/serverless@0.9.4": {
@@ -403,8 +403,8 @@
         "integrity": "sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw==",
         "dependencies": {}
       },
-      "hono@4.4.6": {
-        "integrity": "sha512-XGRnoH8WONv60+PPvP9Sn067A9r/8JdHDJ5bgon0DVEHeR1cJPkWjv2aT+DBfMH9/mEkYa1+VEVFp1DT1lIwjw==",
+      "hono@4.4.13": {
+        "integrity": "sha512-c6qqenclmQ6wpXzqiElMa2jt423PVCmgBreDfC5s2lPPpGk7d0lOymd8QTzFZyYC5mSSs6imiTMPip+gLwuW/g==",
         "dependencies": {}
       },
       "ieee754@1.2.1": {
@@ -1042,12 +1042,12 @@
   "workspace": {
     "dependencies": [
       "npm:@clerk/backend",
-      "npm:@fiberplane/hono@0.2.1-beta.1",
+      "npm:@fiberplane/hono@0.2.1-beta.2",
       "npm:@hono/clerk-auth",
       "npm:@neondatabase/serverless",
       "npm:drizzle-kit",
       "npm:drizzle-orm",
-      "npm:hono",
+      "npm:hono@4.4.13",
       "npm:replicate@0.31.1"
     ]
   }

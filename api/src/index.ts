@@ -18,7 +18,7 @@ import {
   trainLora
 } from "./replicate.ts";
 
-const env = await load();
+const env = await load({ export: true });
 
 const client = new AWS.S3({
   credentials: {
@@ -33,6 +33,7 @@ type Bindings = {
   MIZU_ENDPOINT: string;
   AWS_S3_BUCKET: string;
   BASE_URL: string;
+  FPX_ENDPOINT: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
