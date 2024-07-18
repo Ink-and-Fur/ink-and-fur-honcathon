@@ -115,6 +115,17 @@ type CreateImageInputOptions = Partial<{
   lora_scale?: number
 }>
 
+const DEFAULT_CREATE_IMAGE_INPUT_OPTIONS: CreateImageInputOptions = {
+  negative_prompt: "human, frame, text, signature",
+  width: 1024,
+  height: 1024,
+  num_outputs: 4,
+  refine: "expert_ensemble_refiner",
+  high_noise_frac: 0.92,
+  lora_scale: 0.74,
+  num_inference_steps: 60,
+}
+
 /**
  * Create an image of a pet based on lora weights
  * 
@@ -146,7 +157,7 @@ export async function createImageWithLoraWeights(
   /** Webhook events we wish to receive */
   webhookEventsFilter: WebhookEvent[],
   /** Options for the prediction */
-  inputOptions: CreateImageInputOptions = {},
+  inputOptions: CreateImageInputOptions = DEFAULT_CREATE_IMAGE_INPUT_OPTIONS,
 ) {
   try {
     const output = await replicate.predictions.create({
