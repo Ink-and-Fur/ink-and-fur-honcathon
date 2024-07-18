@@ -20,6 +20,8 @@ import {
 
 const env = await load({ export: true });
 
+console.log(`hotel: ${env.HOTEL}`)
+
 const client = new AWS.S3({
   credentials: {
     accessKeyId: env.AWS_ACCESS_KEY,
@@ -51,7 +53,6 @@ app.use(createHonoMiddleware(app));
 
 app.get("/api/jobs", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
-  console.log(`hotel: ${env.HOTEL}`)
 
   // todo replace this with actual auth later down the road
   const userId = 10;
