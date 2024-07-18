@@ -9,4 +9,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      // string shorthand: http://localhost:5173/api -> http://localhost:8000/api
+      "/api": "http://api:8000",
+    },
+  },
 })

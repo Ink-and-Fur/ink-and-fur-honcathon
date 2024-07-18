@@ -1,16 +1,20 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import './index.css'
-import DashboardLayout, { Dashboard } from './Home.tsx'
-import { LoginForm } from './Login.tsx'
-import RootLayout from './RootLayout.tsx'
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import { TooltipProvider } from '@radix-ui/react-tooltip'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import HomeLayout, { Home } from "./Home.tsx";
+import { LoginForm } from "./Login.tsx";
+import RootLayout from "./RootLayout.tsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { LoggedInLayout } from "./LoggedInLayout.tsx";
+import { PetDetails } from "./PetDetails.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "./components/ui/toaster.tsx";
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
-  throw new Error("Missing Publishable Key")
+  throw new Error("Missing Publishable Key");
 }
 
 const router = createBrowserRouter([
@@ -18,30 +22,28 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       {
-        path: "/", element: <DashboardLayout />, children: [
-          { element: <Dashboard />, index: true },
-        ]
+        path: "/",
+        element: <HomeLayout />,
+        children: [
+          { element: <Home />, index: true },
+          { path: "pet/:name", element: <PetDetails /> },
+        ],
       },
       { path: "/login/*", element: <LoginForm /> },
-      // { path: "/sign-up/*", element: <SignUpPage /> },
-      // {
-      //   element: <DashboardLayout />,
-      //   path: "dashboard",
-      //   children: [
-      //     { path: "/dashboard", element: <DashboardPage /> },
-      //     { path: "/dashboard/invoices", element: <InvoicesPage /> }
-      //   ]
-      // }
-    ]
-  }
-])
+    ],
+  },
+]);
 
+const queryClient = new QueryClient();
 
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TooltipProvider>
-      <RouterProvider router={router} />
-    </TooltipProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <RouterProvider router={router} />
+      </TooltipProvider>
+      <Toaster />
+    </QueryClientProvider>
   </React.StrictMode>,
-)
+);
