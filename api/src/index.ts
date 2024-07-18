@@ -181,7 +181,12 @@ app.get("/api/jobs/:name", async (c) => {
     });
   }
 
-  return c.json(result[0]);
+  const images = await db.select().from(imageJobs).where(eq(imageJobs.name, name));
+
+  return c.json({
+    ...result[0],
+    generatedImages: images,
+  });
 });
 
 app.post("/api/jobs/:userId/:name/callback", async (c) => {
