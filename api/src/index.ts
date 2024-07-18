@@ -15,7 +15,7 @@ import {
   PREDICTION_OUTPUT,
   PREDICTION_START,
   PREDICTION_COMPLETED,
-  trainLora
+  trainLora, createImageWithLoraWeights
 } from "./replicate.ts";
 
 const env = await load({ export: true });
@@ -49,34 +49,6 @@ app.use(createHonoMiddleware(app));
   }),
 );*/
 
-app.get("/no-db", (c) => {
-  const sql = neon(env.DATABASE_URL ?? "");
-
-  return c.json({
-    message: "Hello, world!",
-  });
-});
-
-app.get("/s3", async (c) => {
-  const data = await client.putObject({
-    Bucket: env.AWS_S3_BUCKET,
-    Key: "meow2.txt",
-    Body: "hello",
-  });
-
-  console.log(data);
-
-  return c.text("Hello Hono!");
-});
-
-app.get("/api/users", async (c) => {
-  const sql = neon(env.DATABASE_URL);
-  const users = await sql`select * from users`;
-  return c.json({
-    users,
-  });
-});
-
 app.get("/api/jobs", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
 
@@ -100,6 +72,15 @@ app.post("/api/jobs", async (c) => {
   const body = await c.req.parseBody();
 
   const name = body["name"].toLowerCase(); // mby check that this is ascii only
+  const type = body["type"];
+
+  if (type !== "cat" && type !== "dog")  {
+    return c.json({
+      error: "invalid_type",
+      description: "type needs to be either cat or dog",
+    }, 401);
+  }
+
   const file = body["file"]; // mby check that this is actually a .zip file
 
   // prevnet the name from containing a slash as this doesnt play nicely with our callback urls using path parameters
@@ -139,6 +120,7 @@ app.post("/api/jobs", async (c) => {
     user: userId,
     name: name,
     images: url,
+    type: type
   }).returning();
 
   // now that all the stuff has been successfully uploaded and inserted into our db
@@ -169,7 +151,7 @@ app.post("/api/jobs", async (c) => {
       eq(jobs.name, name),
   ));
 
-  console.log("started job", data.id, ", set status in db to", data.status);
+  console.log("started job", data.id, "for", name, "(user id", userId, "), set status in db to", data.status);
 
   return c.json({
     success: true,
@@ -203,10 +185,7 @@ app.get("/api/jobs/:name", async (c) => {
 
 app.post("/api/jobs/:userId/:name/callback", async (c) => {
   const { userId, name } = c.req.param();
-
   const body = await c.req.json();
-
-  console.log(body);
 
   // put our code into a separate thingy so it doesnt immediately execute, allowing us to return early
   // and not make replicate wait (as it'll resend it very often if we dont respond fast)
@@ -226,7 +205,6 @@ app.post("/api/jobs/:userId/:name/callback", async (c) => {
     const status = body.status;
 
     const job = result[0];
-    console.log("got  result now: ", job);
     job.updates.push(body);
 
     await db.update(jobs).set({
@@ -236,9 +214,6 @@ app.post("/api/jobs/:userId/:name/callback", async (c) => {
         eq(jobs.user, userId),
         eq(jobs.name, name),
     ));
-
-    console.log("updated it even");
-
 
     if (status !== "succeeded") {
       return;
@@ -265,9 +240,78 @@ app.post("/api/jobs/:userId/:name/callback", async (c) => {
         eq(jobs.name, name),
     ));
 
-    console.log("received weights file!");
+    console.log("received weights file for", name, "(user id", userId, ")");
+  });
 
-    // todo: notify the user somehow that its now completed?
+  return c.json({
+    success: true
+  });
+});
+
+app.post("/api/generate", async (c) => {
+  const db = drizzle(neon(env.DATABASE_URL));
+
+  // todo replace this with actual auth later down the road
+  const userId = 10;
+
+  const request = await c.req.json();
+
+  const name = request.name;
+  const prompt = request.prompt;
+  const negativePrompt = request.negativePrompt;
+
+  const result = await db.select().from(jobs).where(and(
+      eq(jobs.user, userId),
+      eq(jobs.name, name),
+  )).limit(1);
+
+  if (result.length === 0) {
+    c.status(404);
+    return c.json({
+      error: "not_found",
+      description: "the pet does not exist",
+    });
+  }
+
+  const pet = result[0];
+  const weights = pet.weights;
+
+  if (weights === null) {
+    c.status(401);
+    return c.json({
+      error: "weights_not_found",
+      description: "start a training job first to create a weights file before trying to generate images",
+    });
+  }
+
+  // todo: insert stuff into db
+
+  const callbackUrl = `${env.BASE_URL}/api/generate/${userId}/${name}/callback`;
+
+  await createImageWithLoraWeights(
+    weights,
+    prompt,
+    callbackUrl,
+    [PREDICTION_START, PREDICTION_OUTPUT, PREDICTION_COMPLETED]);
+  {
+    negativePrompt
+  }
+});
+
+app.post("/api/generate/:userId/:name/callback", async (c) => {
+  const { userId, name } = c.req.param();
+
+  const body = await c.req.json();
+
+  console.log(body);
+
+  // put our code into a separate thingy so it doesnt immediately execute, allowing us to return early
+  // and not make replicate wait (as it'll resend it very often if we dont respond fast)
+  setTimeout(async () => {
+      // output will be array of urls
+    // take those and save in s3
+    // and put in db
+
   });
 
   return c.json({

@@ -7,6 +7,7 @@
       "npm:@neondatabase/serverless": "npm:@neondatabase/serverless@0.9.4",
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:drizzle-kit": "npm:drizzle-kit@0.23.0_esbuild@0.19.12",
+      "npm:drizzle-kit@0.23.0": "npm:drizzle-kit@0.23.0_esbuild@0.19.12",
       "npm:drizzle-orm": "npm:drizzle-orm@0.32.0_@neondatabase+serverless@0.9.4",
       "npm:hono@4.4.13": "npm:hono@4.4.13",
       "npm:replicate@0.31.1": "npm:replicate@0.31.1"

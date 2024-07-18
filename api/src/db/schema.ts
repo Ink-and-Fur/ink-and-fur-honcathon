@@ -16,6 +16,16 @@ export const jobs = pgTable('jobs', {
   weights: text('weights'),
   last_update: text('last_update'),
   updates: jsonb('updates'),
+  type: text('type').notNull().default('dog'),
 }, (t) => ({
   pk: primaryKey({columns: [jobs.user, jobs.name]})
-}))
+}));
+
+export const imageJobs = pgTable('imageJobs', {
+  id: serial('id').primaryKey(),
+  user: integer('user').references((): AnyPgColumn => users.id).notNull(),
+  name: text('name').notNull(),
+  images: jsonb('images'),
+  status: text('status').notNull(),
+  options: jsonb('options').notNull(),
+});

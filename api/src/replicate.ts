@@ -159,11 +159,16 @@ export async function createImageWithLoraWeights(
   /** Options for the prediction */
   inputOptions: CreateImageInputOptions = DEFAULT_CREATE_IMAGE_INPUT_OPTIONS,
 ) {
+  const modOptions = {
+    ...DEFAULT_CREATE_IMAGE_INPUT_OPTIONS,
+    ...inputOptions
+  };
+
   try {
     const output = await replicate.predictions.create({
       version: '5a2b1cff79a2cf60d2a498b424795a90e26b7a3992fbd13b340f73ff4942b81e',
       input: {
-        ...inputOptions,
+        ...modOptions,
         Lora_url: loraUrl,
         prompt,
       },
