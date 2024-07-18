@@ -10,6 +10,7 @@ import { LoggedInLayout } from "./LoggedInLayout.tsx";
 import { PetDetails } from "./PetDetails.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster.tsx";
+import { Playground } from "./Playground.tsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
         ],
       },
       { path: "/login/*", element: <LoginForm /> },
+      {
+        path: "/playground",
+        element: <Playground />,
+      }
     ],
   },
 ]);
