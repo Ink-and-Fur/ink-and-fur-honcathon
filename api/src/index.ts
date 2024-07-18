@@ -11,7 +11,7 @@ import {
   serveStatic
 } from "./deps.ts";
 import * as AWS from "s3";
-import {jobs} from "./db/schema.ts";
+import {imageJobs, jobs} from "./db/schema.ts";
 import {
   PREDICTION_OUTPUT,
   PREDICTION_START,
@@ -285,22 +285,48 @@ app.post("/api/generate", async (c) => {
     });
   }
 
-  // todo: insert stuff into db
+  const createImageJobResult = await db.insert(imageJobs).values({
+    user: userId,
+    name: name,
+    status: 'starting',
+    options: {
+      prompt,
+      negativePrompt
+    }
+  }).returning();
 
-  const callbackUrl = `${env.BASE_URL}/api/generate/${userId}/${name}/callback`;
+  const actualResult = createImageJobResult[0];
 
-  await createImageWithLoraWeights(
+  const callbackUrl = `${env.BASE_URL}/api/generate/${actualResult.id}/callback`;
+
+  const { data, error } = await createImageWithLoraWeights(
     weights,
     prompt,
     callbackUrl,
-    [PREDICTION_START, PREDICTION_OUTPUT, PREDICTION_COMPLETED]);
-  {
-    negativePrompt
+    [PREDICTION_START, PREDICTION_OUTPUT, PREDICTION_COMPLETED],
+      {
+        negative_prompt: negativePrompt
+      });
+
+  if (error !== null) {
+    console.error(error);
+
+    return c.json({
+      error: "create_image_with_lora_weights_failed",
+      description: error.toString(),
+    }, 502);
   }
+
+  console.log(data);
+
+  return c.json({
+    success: true,
+    job: actualResult,
+  });
 });
 
-app.post("/api/generate/:userId/:name/callback", async (c) => {
-  const { userId, name } = c.req.param();
+app.post("/api/generate/:id/callback", async (c) => {
+  const { id } = c.req.param();
 
   const body = await c.req.json();
 
@@ -309,10 +335,54 @@ app.post("/api/generate/:userId/:name/callback", async (c) => {
   // put our code into a separate thingy so it doesnt immediately execute, allowing us to return early
   // and not make replicate wait (as it'll resend it very often if we dont respond fast)
   setTimeout(async () => {
-      // output will be array of urls
-    // take those and save in s3
-    // and put in db
+    const db = drizzle(neon(env.DATABASE_URL));
 
+    const result = await db.select().from(imageJobs).where(eq(imageJobs.id, id)).limit(1);
+
+    if (result.length !== 1) {
+      console.warn("received replicate webhook for unknown job");
+      return;
+    }
+
+    const job = result[0];
+
+    const status = body.status;
+
+    await db.update(imageJobs).set({
+      status: status
+    }).where(eq(imageJobs.id, id));
+
+    if (status !== "succeeded") {
+      console.log("received unsucceeded update");
+      return;
+    }
+
+    const urls = body.output;
+    let outputUrls = [];
+
+    for (const value of urls) {
+      const index = urls.indexOf(value);
+
+      const response = await fetch(value);
+      const imageBody = await response.arrayBuffer();
+
+      const fileName = `image_${index}_${job.user}_${job.name}.png`;
+
+      await client.putObject({
+        Bucket: env.AWS_S3_BUCKET,
+        Key: fileName,
+        Body: imageBody,
+      });
+
+      const url = `https://${env.AWS_S3_BUCKET}.s3.eu-central-1.amazonaws.com/${fileName}`;
+      outputUrls.push(url);
+    }
+
+    await db.update(imageJobs).set({
+      images: outputUrls
+    }).where(eq(imageJobs.id, id));
+
+    console.log("received images for job", id);
   });
 
   return c.json({
