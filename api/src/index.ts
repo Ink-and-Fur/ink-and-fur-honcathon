@@ -371,7 +371,7 @@ app.post("/api/generate/:id/callback", async (c) => {
       const response = await fetch(value);
       const imageBody = await response.arrayBuffer();
 
-      const fileName = `image_${index}_${job.user}_${job.name}.png`;
+      const fileName = `image_${id}_${index}_${job.user}_${job.name}.png`;
 
       await client.putObject({
         Bucket: env.AWS_S3_BUCKET,
