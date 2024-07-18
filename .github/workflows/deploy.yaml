@@ -23,6 +23,8 @@ jobs:
         uses: actions/checkout@v4
       -
         name: Build frontend
+        env:
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PK }}
         run: |
           cd frontend
           npm install

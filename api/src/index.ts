@@ -7,7 +7,8 @@ import {
   Hono,
   load,
   neon,
-  createHonoMiddleware
+  createHonoMiddleware,
+  serveStatic
 } from "./deps.ts";
 import * as AWS from "s3";
 import {jobs} from "./db/schema.ts";
@@ -343,5 +344,7 @@ app.post("/api/generate/:userId/:name/callback", async (c) => {
     }, 404);
   }
 });*/
+
+app.use("/*", serveStatic({ root: "./public" }));
 
 export default app;
