@@ -1,5 +1,5 @@
 import { Share } from "lucide-react";
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { Button } from "./components/ui/button";
 
 export function LoggedInLayout() {
@@ -7,9 +7,11 @@ export function LoggedInLayout() {
     <div className="grid h-screen w-full pl-[56px]">
       <aside className="inset-y fixed left-0 z-20 flex h-full flex-col ">
         <div className="py-1 px-2">
-          <Button variant="outline" size="icon" aria-label="Home">
-            <img src="/ink-and-fur-logo-md.png" alt="Ink &amp; Fur" className="size-6" />
-          </Button>
+          <NavLink to="/">
+            <Button variant="outline" size="icon" aria-label="Home">
+              <img src="/ink-and-fur-logo-md.png" alt="Ink &amp; Fur" className="size-6" />
+            </Button>
+          </NavLink>
         </div>
         <nav className="grid gap-1 p-2">
           {/* <Tooltip>

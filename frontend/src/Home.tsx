@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 
 export function SkeletonLoading() {
   return (
-    <div className="h-screen w-screen flex items-center justify-center p-24">
+    <div className="flex items-center justify-center p-24">
       <div className="flex items-center space-x-4">
         <Skeleton className="h-72 w-72" />
       </div>
@@ -110,7 +110,7 @@ export function Home() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -123,7 +123,7 @@ export function Home() {
               >
                 <TableCell>{pet.name}</TableCell>
                 <TableCell>
-                  {/* Add any action buttons or links here */}
+                  {pet.last_status ?? "unknown"}
                 </TableCell>
               </TableRow>
             ))}
