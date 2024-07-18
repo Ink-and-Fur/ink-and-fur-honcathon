@@ -1,6 +1,7 @@
 {
     "imports": {
-        "hono": "jsr:@hono/hono",
+        "hono": "npm:hono",
+        "@fiberplane/hono": "npm:@fiberplane/hono@0.2.1-beta.1",
         "@clerk/backend": "npm:@clerk/backend",
         "@hono/clerk-auth": "npm:@hono/clerk-auth",
         "@neondatabase/serverless": "npm:@neondatabase/serverless",
@@ -8,6 +9,7 @@
         "drizzle-orm/postgres-js": "npm:drizzle-orm/postgres-js",
         "drizzle-kit": "npm:drizzle-kit",
         "postgres": "https://deno.land/x/postgresjs@v3.4.4/mod.js",
+        "replicate": "npm:replicate@0.31.1",
         "env": "https://deno.land/std@0.224.0/dotenv/mod.ts",
         "s3": "https://esm.sh/@aws-sdk/client-s3@3.614.0"
     },

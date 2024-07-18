@@ -7,8 +7,8 @@ import {
   Hono,
   load,
   neon,
+  createHonoMiddleware
 } from "./deps.ts";
-// import { logger, Mizu } from "./mizu.ts";
 import * as AWS from "s3";
 import {jobs} from "./db/schema.ts";
 import {
@@ -37,24 +37,9 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-// Mizu Tracing Middleware - Must be called first!
-// app.use(async (c, next) => {
-//   const config = { MIZU_ENDPOINT: env.MIZU_ENDPOINT };
-//   const ctx = c.executionCtx;
+app.use(createHonoMiddleware(app));
 
-//   const teardown = Mizu.init(
-//     config,
-//     ctx,
-//   );
-
-//   await next();
-
-//   teardown();
-// });
-
-// Mizu request logging
-// app.use(logger());
-
+// Clerk Auth Middleware - commented out
 /*app.use(
   "*",
   clerkMiddleware({
@@ -63,7 +48,7 @@ const app = new Hono<{ Bindings: Bindings }>();
   }),
 );*/
 
-app.get("/no-db", async (c) => {
+app.get("/no-db", (c) => {
   const sql = neon(env.DATABASE_URL ?? "");
 
   return c.json({
@@ -95,7 +80,7 @@ app.get("/api/jobs", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
 
   // todo replace this with actual auth later down the road
-  let userId = 10;
+  const userId = 10;
 
   const allJobs = await db.select().from(jobs).where(eq(jobs.user, userId));
 
@@ -108,7 +93,7 @@ app.post("/api/jobs", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
 
   // todo replace this with actual auth later down the road
-  let userId = 10;
+  const userId = 10;
 
   // parses the request as multipart/form-data: https://hono.dev/examples/file-upload
   const body = await c.req.parseBody();
@@ -195,7 +180,7 @@ app.get("/api/jobs/:name", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
 
   // todo replace this with actual auth later down the road
-  let userId = 10;
+  const userId = 10;
 
   const name = c.req.param("name");
 

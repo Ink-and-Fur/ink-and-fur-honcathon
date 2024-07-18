@@ -1,6 +1,5 @@
 // TODO - Update client, this is an older version
-import Replicate from 'https://esm.sh/replicate@0.18.0'
-import {load} from "./deps.ts";
+import { load, Replicate } from "./deps.ts";
 
 const env = await load();
 
