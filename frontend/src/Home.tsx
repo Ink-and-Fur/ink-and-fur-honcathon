@@ -1,4 +1,4 @@
-import { PawPrint } from "lucide-react";
+import { Cat, Dog, PawPrint } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -166,18 +166,24 @@ export function Home() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-4"><span className="sr-only">pet type</span></TableHead>
                   <TableHead>name</TableHead>
-                  <TableHead className="w-[100px]">Status</TableHead>
+                  <TableHead className="w-[100px]">status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {pets.jobs.map((pet: { id: number; name: string; last_update?: string }) => (
+                {pets.jobs.map((pet: { id: number; name: string; type: string; last_update?: string }) => (
                   <TableRow className="p-1 cursor-pointer" key={pet.name} onClick={
                     () => {
                       navigate(`/pet/${pet.name}`)
                     }
                   }>
-                    <TableCell className="py-2">{pet.name}</TableCell>
+                    <TableCell className="py-2">
+                      {pet.type === "dog" ? <Dog className="inline w-4 h-4 text-muted-foreground" /> : <Cat className="inline w-4 h-4 text-muted-foreground" />}
+                    </TableCell>
+                    <TableCell className="py-2">
+                      {pet.name}
+                    </TableCell>
                     <TableCell className={cn("py-2", {
                       "text-green-600": pet?.last_update === "succeeded",
                     })}>
