@@ -21,6 +21,7 @@ export function useGetPet(name: string) {
   const query = useQuery({
     queryKey: ["pets", name],
     queryFn: () => getPet(name),
+    refetchInterval: 10000,
   });
 
   return query;
