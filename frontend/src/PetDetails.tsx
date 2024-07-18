@@ -5,7 +5,7 @@ import { useGetPet } from "./queries/index.ts";
 export function PetDetails() {
   const { name } = useParams();
   const { data: pet, isPending } = useGetPet(name);
-  const latestUpdate = pet.updates.reverse()[0];
+  const latestUpdate = pet?.updates?.reverse()?.[0];
   return (
     <div>
       {isPending && <p>Loading...</p>}
