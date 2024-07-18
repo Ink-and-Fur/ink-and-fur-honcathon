@@ -51,6 +51,7 @@ app.use(createHonoMiddleware(app));
 
 app.get("/api/jobs", async (c) => {
   const db = drizzle(neon(env.DATABASE_URL));
+  console.log(`hotel: ${env.HOTEL}`)
 
   // todo replace this with actual auth later down the road
   const userId = 10;
