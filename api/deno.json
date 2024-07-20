@@ -1,7 +1,7 @@
 {
     "imports": {
         "hono": "npm:hono@4.4.13",
-        "@fiberplane/hono": "npm:@fiberplane/hono@0.2.1-beta.3",
+        "@fiberplane/hono": "npm:@fiberplane/hono@0.2.1-beta.4",
         "@clerk/backend": "npm:@clerk/backend",
         "@hono/clerk-auth": "npm:@hono/clerk-auth",
         "@neondatabase/serverless": "npm:@neondatabase/serverless",
