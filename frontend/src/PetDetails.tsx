@@ -165,13 +165,14 @@ type GeneratedImage = {
 };
 
 function Photos({ pet }: { pet: Pet }) {
-  const pendingBlocks = pet?.generatedImages?.filter(i => i.status !== "succeeded")
-  const imagesToRender = pet?.generatedImages?.filter(i => i.status === "succeeded")?.flatMap(i => i.images)
+  console.log("pet", pet);
+  const pendingBlocks = pet?.generatedImages?.filter(i => i.status !== "succeeded");
+  const imagesToRender = pet?.generatedImages?.filter(i => i.status === "succeeded")?.flatMap(i => i.images)?.filter((image, index, self) => self.indexOf(image) === index);
   return (
     <div>
       <h2>Photos</h2>
       {pendingBlocks?.map((block, index) => {
-        return <div className="p-4 text-lg bg-slate-500 rounded-lg border text-white" key={block.id ?? index}>waiting on some images!</div>
+        return <div className="p-4 text-lg bg-slate-500 rounded-lg border text-white" key={index}>waiting on some images!</div>
       })}
       {imagesToRender?.map((image) => {
         return <img key={image} src={image} alt={pet.name} />
